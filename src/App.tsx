@@ -1,18 +1,16 @@
 import React from "react";
-import logo from "./logo.svg";
-import "./App.css";
 import {
-  gql,
   HttpLink,
-  useQuery,
   ApolloLink,
   ApolloClient,
   InMemoryCache,
   ApolloProvider,
 } from "@apollo/client";
 import { OktaAuth, toRelativeUrl } from "@okta/okta-auth-js";
-import { Route, Routes, useNavigate, Outlet } from "react-router-dom";
+import { Route, Routes, useNavigate, Outlet, Link } from "react-router-dom";
 import { Security, LoginCallback, useOktaAuth } from "@okta/okta-react";
+import Greeting from "./examples/Greeting";
+import People from "./examples/People";
 
 // Helper Links
 // https://stackoverflow.com/questions/57399598/use-auth0s-hook-useauth0-to-get-token-and-set-header-in-apollo-client
@@ -39,15 +37,12 @@ export function OktaSecuredApp() {
           path="login/callback"
           element={<LoginCallback loadingElement={<h3>Loading</h3>} />} //TODO: Improve Loading
         />
-        <Route path="/" element={<RequiredAuth />}>
-          <Route
-            index
-            element={
-              <ApolloProviderWithOkta>
-                <App />
-              </ApolloProviderWithOkta>
-            }
-          />
+        <Route path="/" element={<SecureApplicationWithApollo />}>
+          <Route index element={<Home />} />{" "}
+          <Route path="greeting" element={<Greeting />} />
+          <Route path="people" element={<People />} />
+          {/* Layout would likely go here then everything inside of it */}
+          {/* Maybe it actually lives in the SecureApplicationWithApollo? That way the first outlet can start the nesting*/}
         </Route>
       </Routes>
     </Security>
@@ -76,6 +71,7 @@ const ApolloProviderWithOkta: React.FC<{ children: any }> = ({ children }) => {
   const client = React.useRef<any>();
 
   if (!client.current) {
+    console.log("Creating Client");
     client.current = new ApolloClient({
       link: authLink.concat(httpLink),
       cache: new InMemoryCache(),
@@ -85,6 +81,43 @@ const ApolloProviderWithOkta: React.FC<{ children: any }> = ({ children }) => {
   return <ApolloProvider client={client.current}>{children}</ApolloProvider>;
 };
 
+// A component that can stay at the root of the application and ensure users are logged in and add any other cross cutting concerns
+const SecureApplicationWithApollo: React.FC = () => {
+  const { oktaAuth, authState } = useOktaAuth();
+  if (!authState || !authState?.isAuthenticated) {
+    const originalUri = toRelativeUrl(
+      window.location.href,
+      window.location.origin
+    );
+    oktaAuth.setOriginalUri(originalUri);
+    oktaAuth.signInWithRedirect();
+
+    //TODO: Improve
+    return <h3>Loading...</h3>;
+  }
+
+  return (
+    <ApolloProviderWithOkta>
+      {/* Layout may be better to go here? */}
+      <div>
+        <Link to="greeting">Greeting</Link> <Link to="people">People</Link>{" "}
+      </div>
+      <Outlet />
+    </ApolloProviderWithOkta>
+  );
+};
+
+const Home: React.FC = () => {
+  const { authState } = useOktaAuth();
+  return (
+    <div>
+      <h1>Welcome to the Application {authState?.idToken?.claims.name}!</h1>
+    </div>
+  );
+};
+
+// Old Items That May Get Deleted
+// eslint-disable-next-line
 const RequiredAuth: React.FC = () => {
   const { oktaAuth, authState } = useOktaAuth();
 
@@ -103,46 +136,4 @@ const RequiredAuth: React.FC = () => {
   return <Outlet />;
 };
 
-const ALL_PEOPLE = gql`
-  query GetPeople {
-    allPeople {
-      id
-      name
-      sin
-    }
-  }
-`;
-
-const GREETING = gql`
-  query Greeting {
-    greeting
-  }
-`;
-
-function App() {
-  //TODO: Show data on the page rather than in logs.
-  const { loading, error, data } = useQuery(ALL_PEOPLE);
-  console.log("loading", loading);
-  console.log("error", error);
-  console.log("data", data);
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
-
-export default App;
+export default OktaSecuredApp;
