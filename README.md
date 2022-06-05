@@ -19,9 +19,13 @@ As mentioned above I am using Spring Boot's GraphQL starter for my graphql endpo
 ## Built With
 
 - Front End
-  - Create React App
-  - Apollo Client
-  - OKTA
+  - [Create React App](https://create-react-app.dev/)
+  - [Apollo Client](https://www.apollographql.com/docs/react/)
+  - [Okta React](https://github.com/okta/okta-react)
+  - [React Hook Form](https://react-hook-form.com/)
+  - [TailwindCSS](https://tailwindcss.com/)
+  - [React Toastify](https://www.npmjs.com/package/react-toastify) **Coming Soon**
+  - [React Date Picker](https://github.com/Hacker0x01/react-datepicker) **Coming Soon**
 - Back End
   - Spring Boot GraphQL Starter
 
