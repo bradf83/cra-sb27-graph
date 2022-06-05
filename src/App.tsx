@@ -7,11 +7,12 @@ import {
   ApolloProvider,
 } from "@apollo/client";
 import { OktaAuth, toRelativeUrl } from "@okta/okta-auth-js";
-import { Route, Routes, useNavigate, Outlet, Link } from "react-router-dom";
+import { Route, Routes, useNavigate, Outlet } from "react-router-dom";
 import { Security, LoginCallback, useOktaAuth } from "@okta/okta-react";
 import Greeting from "./examples/Greeting";
 import People from "./examples/People";
 import BasicHookForm from "./examples/BasicHookForm";
+import CalendarOne from "./examples/CalendarOne";
 
 // Helper Links
 // https://stackoverflow.com/questions/57399598/use-auth0s-hook-useauth0-to-get-token-and-set-header-in-apollo-client
@@ -41,6 +42,7 @@ export function OktaSecuredApp() {
         <Route path="/" element={<SecureApplicationWithApollo />}>
           <Route index element={<Home />} />{" "}
           <Route path="basic-hook-form" element={<BasicHookForm />} />
+          <Route path="calendar-one" element={<CalendarOne />} />
           <Route path="greeting" element={<Greeting />} />
           <Route path="people" element={<People />} />
           {/* Layout would likely go here then everything inside of it */}
@@ -110,6 +112,7 @@ const SecureApplicationWithApollo: React.FC = () => {
         >
           <option value="">Home</option>
           <option value="basic-hook-form">Basic Hook Form</option>
+          <option value="calendar-one">Calendar One</option>
           <option value="greeting">Greeting</option>
           <option value="people">People</option>
         </select>
