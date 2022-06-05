@@ -20,7 +20,7 @@ const People: React.FC = () => {
   }
   return (
     <div>
-      <h1>People Data From GraphQL</h1>
+      <h1 className="text-3xl font-bold">People Data From GraphQL</h1>
       {data && data.allPeople.length > 0 ? (
         <div>
           <table>

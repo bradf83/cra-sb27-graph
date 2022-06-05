@@ -11,6 +11,7 @@ import { Route, Routes, useNavigate, Outlet, Link } from "react-router-dom";
 import { Security, LoginCallback, useOktaAuth } from "@okta/okta-react";
 import Greeting from "./examples/Greeting";
 import People from "./examples/People";
+import BasicHookForm from "./examples/BasicHookForm";
 
 // Helper Links
 // https://stackoverflow.com/questions/57399598/use-auth0s-hook-useauth0-to-get-token-and-set-header-in-apollo-client
@@ -39,6 +40,7 @@ export function OktaSecuredApp() {
         />
         <Route path="/" element={<SecureApplicationWithApollo />}>
           <Route index element={<Home />} />{" "}
+          <Route path="basic-hook-form" element={<BasicHookForm />} />
           <Route path="greeting" element={<Greeting />} />
           <Route path="people" element={<People />} />
           {/* Layout would likely go here then everything inside of it */}
@@ -84,6 +86,7 @@ const ApolloProviderWithOkta: React.FC<{ children: any }> = ({ children }) => {
 // A component that can stay at the root of the application and ensure users are logged in and add any other cross cutting concerns
 const SecureApplicationWithApollo: React.FC = () => {
   const { oktaAuth, authState } = useOktaAuth();
+  const navigate = useNavigate();
   if (!authState || !authState?.isAuthenticated) {
     const originalUri = toRelativeUrl(
       window.location.href,
@@ -99,10 +102,21 @@ const SecureApplicationWithApollo: React.FC = () => {
   return (
     <ApolloProviderWithOkta>
       {/* Layout may be better to go here? */}
-      <div>
-        <Link to="greeting">Greeting</Link> <Link to="people">People</Link>{" "}
+      <div className="bg-gray-50 flex items-center space-x-2">
+        <span>Choose an Example:</span>
+        <select
+          className="p-2 border rounded "
+          onChange={(event) => navigate("/" + event.target.value)}
+        >
+          <option value="">Home</option>
+          <option value="basic-hook-form">Basic Hook Form</option>
+          <option value="greeting">Greeting</option>
+          <option value="people">People</option>
+        </select>
       </div>
-      <Outlet />
+      <main className="bg-gray-50 h-screen">
+        <Outlet />
+      </main>
     </ApolloProviderWithOkta>
   );
 };
