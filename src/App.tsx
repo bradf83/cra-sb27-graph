@@ -13,6 +13,7 @@ import Greeting from "./examples/Greeting";
 import People from "./examples/People";
 import BasicHookForm from "./examples/BasicHookForm";
 import CalendarOne from "./examples/CalendarOne";
+import HolidayAMonth from "./examples/HolidayAMonth";
 
 // Helper Links
 // https://stackoverflow.com/questions/57399598/use-auth0s-hook-useauth0-to-get-token-and-set-header-in-apollo-client
@@ -44,6 +45,7 @@ export function OktaSecuredApp() {
           <Route path="basic-hook-form" element={<BasicHookForm />} />
           <Route path="calendar-one" element={<CalendarOne />} />
           <Route path="greeting" element={<Greeting />} />
+          <Route path="holiday-a-month" element={<HolidayAMonth />} />
           <Route path="people" element={<People />} />
           {/* Layout would likely go here then everything inside of it */}
           {/* Maybe it actually lives in the SecureApplicationWithApollo? That way the first outlet can start the nesting*/}
@@ -114,6 +116,7 @@ const SecureApplicationWithApollo: React.FC = () => {
           <option value="basic-hook-form">Basic Hook Form</option>
           <option value="calendar-one">Calendar One</option>
           <option value="greeting">Greeting</option>
+          <option value="holiday-a-month">Holiday a Month</option>
           <option value="people">People</option>
         </select>
       </div>
